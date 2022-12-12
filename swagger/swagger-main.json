@@ -1,0 +1,350 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "KWLS API Document",
+    "description": "광운대학교 도서관 알림 API 문서입니다.<br/>열람실 (최대) 좌석 정보 : [URL](http://mobileid.kw.ac.kr/seatweb/domian5.asp)<br/>도서관 API 정보 : [URL](https://github.com/KNET-KWU/kwu-readingroom-api)<br/>API 시트 : [URL](https://docs.google.com/spreadsheets/d/1P8kH5H6izDMUPm9cwBpP-6raD9sVMOMFmitYIBDX2hE/edit#gid=0)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.pgh268400.duckdns.org/"
+    }
+  ],
+  "paths": {
+    "/api/reserve": {
+      "get": {
+        "summary": "예약 가져오기",
+        "description": "자리 예약 작업을 얻어옵니다.",
+        "operationId": "get_reserve",
+        "consumes": ["text/plain"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "body",
+            "description": "Firebase Push를 보내기 위한 기기 token (string)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "cEYfwfvjdEvVgYUcegeA2a:APA91bFlEcp_LWMmPogtjSLouB3PadfWvXTS9Z9DaukBW-wrH3DSPCA1vTl94l9EdBtlbczIQWC4FYljCfbkqmJB5MlolDEa4Af7dzKqrERW7oY7wQ6aZ9IpbInCicTpns-CAo3dw2HH"
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "예약 정보에 대한 DB 정보를 반환합니다. 없으면 빈 json 객체를 반환합니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "단일 예약 하기",
+        "description": "단일 자리 예약 작업을 수행합니다.",
+        "operationId": "set_reserve",
+        "consumes": ["text/plain"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "body",
+            "description": "Firebase Push를 보내기 위한 기기 token (string)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "cEYfwfvjdEvVgYUcegeA2a:APA91bFlEcp_LWMmPogtjSLouB3PadfWvXTS9Z9DaukBW-wrH3DSPCA1vTl94l9EdBtlbczIQWC4FYljCfbkqmJB5MlolDEa4Af7dzKqrERW7oY7wQ6aZ9IpbInCicTpns-CAo3dw2HH"
+            }
+          },
+          {
+            "name": "room_num",
+            "in": "body",
+            "description": "자유 열람실 번호 (int), 1~3 이외의 값을 넣으면 실패합니다.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": 1
+            }
+          },
+          {
+            "name": "sheet_num",
+            "in": "body",
+            "description": "좌석번호 (int), 자유 열람실 좌석 범위를 넘어서면 실패합니다 (위 URL 참고)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": 50
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "예약 성공, 이후 자리가 나면 토큰값을 이용해 기기에 알림을 받을 수 있습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isSuccess": {
+                      "type": "boolean",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "예약 실패 (모종의 이유로 실패한 경우)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isSuccess": {
+                      "type": "boolean",
+                      "example": "false"
+                    },
+                    "err": {
+                      "type": "string",
+                      "example": "오류 메세지"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "example": "string"
+                  },
+                  "room_num": {
+                    "example": "int"
+                  },
+                  "sheet_num": {
+                    "example": "int"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reserves": {
+      "post": {
+        "summary": "다중 예약 하기",
+        "description": "다중 자리 예약 작업을 수행합니다.",
+        "operationId": "set_reserves",
+        "consumes": ["text/plain"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "body",
+            "description": "Firebase Push를 보내기 위한 기기 token (string)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "cEYfwfvjdEvVgYUcegeA2a:APA91bFlEcp_LWMmPogtjSLouB3PadfWvXTS9Z9DaukBW-wrH3DSPCA1vTl94l9EdBtlbczIQWC4FYljCfbkqmJB5MlolDEa4Af7dzKqrERW7oY7wQ6aZ9IpbInCicTpns-CAo3dw2HH"
+            }
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "description": "예약할 좌석 정보 (배열)",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "room_num": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "sheet_num": {
+                    "type": "integer",
+                    "example": 50
+                  }
+                },
+                "required": ["room_num", "sheet_num"],
+                "example": [
+                  {
+                    "room_num": 1,
+                    "sheet_num": 50
+                  },
+                  {
+                    "room_num": 2,
+                    "sheet_num": 50
+                  },
+                  {
+                    "room_num": 3,
+                    "sheet_num": 50
+                  }
+                ]
+              }
+            }
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "예약 성공, 이후 자리가 나면 토큰값을 이용해 기기에 알림을 받을 수 있습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isSuccess": {
+                      "type": "boolean",
+                      "example": "true"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "예약 실패 (모종의 이유로 실패한 경우)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isSuccess": {
+                      "type": "boolean",
+                      "example": "false"
+                    },
+                    "err": {
+                      "type": "string",
+                      "example": "오류 메세지"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "example": "string"
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "room_num": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "sheet_num": {
+                          "type": "integer",
+                          "example": 50
+                        }
+                      },
+                      "required": ["room_num", "sheet_num"]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inquire?room_num={room_num}": {
+      "get": {
+        "summary": "열람실 좌석 조회 (Alternative for K-NET)",
+        "description": "열람실의 좌석 정보를 조회합니다. (K-NET 대체용)",
+        "operationId": "used",
+        "consumes": ["text/plain"],
+
+        "responses": {
+          "200": {
+            "description": "열람실의 좌석 정보를 json 형태로 응답합니다. 사용방법은 K-NET API와 똑같고 응답 데이터도 동일합니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inquire/used": {
+      "get": {
+        "summary": "모든 열람실 사용좌석 조회",
+        "description": "모든 열람실의 사용중인 좌석 정보 가져오기",
+        "operationId": "used",
+        "consumes": ["text/plain"],
+
+        "responses": {
+          "200": {
+            "description": "모든 열람실에서 사용중인 좌석 정보를 json 형태로 응답합니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inquire/unused": {
+      "get": {
+        "summary": "모든 열람실 미사용좌석 조회",
+        "description": "모든 열람실의 미사용중인 좌석 정보 가져오기",
+        "operationId": "unused",
+        "consumes": ["text/plain"],
+
+        "responses": {
+          "200": {
+            "description": "모든 열람실에서 미사용중인 좌석 정보를 json 형태로 응답합니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "in": "header",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

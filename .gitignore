@@ -1,0 +1,4 @@
+# 해당 프로젝트 Git에서 무시할 파일 정하기
+node_modules/
+
+OSS_Server.syno.json
