@@ -11,7 +11,7 @@ const asyncify = require("express-asyncify");
 
 const access_path = path.resolve(
   __dirname,
-  "./wawa-15cab-firebase-adminsdk-pds2l-8a791f92f8.json"
+  "./private/wawa-15cab-firebase-adminsdk-pds2l-8a791f92f8.json"
 ); //json private key 경로
 
 //firebase admin 초기화
